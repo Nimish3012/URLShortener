@@ -1,0 +1,25 @@
+{
+  "name": "urlshortener",
+  "version": "1.0.0",
+  "description": "A simple Node.js-based URL shortener API that allows users to shorten long URLs and redirect to them using a short code. The project uses **Node.js**, **Express**, and **Docker** for containerization. It’s designed to help you learn how to build and deploy a basic API, and how to containerize it with Docker.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nimish3012/URLShortener.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nimish3012/URLShortener/issues"
+  },
+  "homepage": "https://github.com/Nimish3012/URLShortener#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
