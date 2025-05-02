@@ -43,12 +43,14 @@ app.listen(PORT, () => {
 
 
 //call
+
 // Invoke-RestMethod -Method POST -Uri http://localhost:5000/shorten `
 //   -Body '{"longUrl": "https://www.linkedin.com/in/nimish-sahu-a611a1224"}' `
 //   -ContentType "application/json"
 
 
-//   or curl -Method POST -Uri http://localhost:5000/shorten `
-// >> -Headers @{"Content-Type"="application/json"} `
-// >> -Body '{"longUrl": "https://www.linkedin.com/in/nimish-sahu-a611a1224"}'
+//   or
+//  curl -Method POST -Uri http://localhost:5000/shorten `
+//  -Headers @{"Content-Type"="application/json"} `
+//  -Body '{"longUrl": "https://www.linkedin.com/in/nimish-sahu-a611a1224"}'
 

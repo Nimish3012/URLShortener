@@ -1,0 +1,6 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+# Exclude README.md only if it's not needed in the image
+README.md 
