@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: url-shortener-service
+  name: url-shortener-api-service
 spec:
   type: LoadBalancer
   selector:
-    app: url-shortener
+    app: url-shortener-api
   ports:
-    - port: 80
+    - protocol: TCP
+      port: 80
       targetPort: 5000

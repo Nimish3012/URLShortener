@@ -1,142 +1,226 @@
+Here's your updated `README.md` file, reflecting everything we've done so far, including Kubernetes deployment, handling persistence issues, and using environment variables for the base URL:
+
+---
+
+````markdown
 # URL Shortener
 
-A simple Node.js-based URL shortener API that allows users to shorten long URLs and redirect to them using a short code. The project uses **Node.js**, **Express**, and **Docker** for containerization. It’s designed to help you learn how to build and deploy a basic API, and how to containerize it with Docker.
+A simple Node.js-based URL shortener API that allows users to shorten long URLs and redirect to them using a short code. It uses Node.js, Express, and Docker for containerization. This project demonstrates building and deploying a basic API using Docker and Kubernetes, handling persistence, and managing configuration via environment variables.
 
 ## Table of Contents
 
-* [Project Overview](#project-overview)
-* [Installation](#installation)
-* [Usage](#usage)
-* [Docker Setup](#docker-setup)
-* [API Endpoints](#api-endpoints)
-* [Development](#development)
-* [License](#license)
+- [Project Overview](#project-overview)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Endpoints](#api-endpoints)
+- [Docker Setup](#docker-setup)
+- [Kubernetes Deployment](#kubernetes-deployment)
+- [Development](#development)
+- [License](#license)
+
+---
 
 ## Project Overview
 
-The URL Shortener allows users to shorten long URLs and retrieve the original URL using a short code. It is designed to be simple for educational purposes, making it easy to understand how URL shorteners work while learning backend development concepts.
+The URL Shortener allows users to:
+
+- Shorten long URLs using a simple POST request.
+- Retrieve and redirect to the original URL via the short code.
+- Run the API locally, in Docker, or in a Kubernetes cluster.
+- Persist shortened URLs using a shared JSON file (suitable for single-instance or shared-volume setups).
 
 ## Installation
 
 ### Prerequisites
 
-Before starting, ensure you have the following installed on your machine:
+Ensure you have the following installed:
 
-* [Node.js](https://nodejs.org/en/download/)
-* [Docker](https://docs.docker.com/get-docker/)
-* [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- Node.js
+- Docker
+- Git
+- (Optional) kubectl and minikube or a Kubernetes cluster
 
 ### Steps to Set Up Locally
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/<your-username>/URLshortener.git
-   cd URLshortener
-   ```
+```bash
+git clone https://github.com/<your-username>/URLshortener.git
+cd URLshortener
+````
 
 2. Install dependencies:
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
 3. Start the server:
 
-   ```bash
-   node app.js
-   ```
-
-4. The server will run at `http://localhost:5000`.
-
-## Usage
-
-Once the server is running, you can interact with the URL shortener API using **Postman**, **cURL**, or any HTTP client.
-
-### API Endpoints
-
-#### `POST /shorten`
-
-This endpoint allows you to shorten a long URL.
-
-**Request Body**:
-
-```json
-{
-  "url": "https://www.example.com"
-}
+```bash
+node app.js
 ```
 
-**Response**:
-
-```json
-{
-  "short_url": "http://localhost:5000/short/<shortCode>"
-}
-```
-
-#### `GET /short/:code`
-
-This endpoint redirects you to the original URL using the short code.
-
-**Example Request**: `GET http://localhost:5000/short/<shortCode>`
-
-**Response**: Redirects to the original URL.
-
-## Docker Setup
-
-To run this project in a Docker container:
-
-1. **Build the Docker image**:
-
-   ```bash
-   docker build -t url-shortener .
-   ```
-
-2. **Run the Docker container**:
-
-   ```bash
-   docker run -p 5000:5000 url-shortener
-   ```
-
-This will start the application inside a Docker container and expose it on `http://localhost:5000`.
-
-## Development
-
-To make changes to the project:
-
-1. Create a new branch for your feature or bugfix:
-
-   ```bash
-   git checkout -b feature-xyz
-   ```
-
-2. Make your changes to the code.
-
-3. Add and commit your changes:
-
-   ```bash
-   git add .
-   git commit -m "Add feature XYZ"
-   ```
-
-4. Push your changes:
-
-   ```bash
-   git push origin feature-xyz
-   ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+> Server will run at `http://localhost:5000` by default.
 
 ---
 
-### Optional: Add License File
+## Usage
 
-If you want to include a **LICENSE** file, you can use the MIT License, which is a common open-source license. Here's the content for a basic MIT License:
+Once the server is running, interact with the API using Postman, cURL, or any HTTP client.
 
-```txt
+### Example Request (cURL)
+
+```bash
+curl -X POST http://localhost:5000/shorten \
+  -H "Content-Type: application/json" \
+  -d '{"longUrl": "https://www.example.com"}'
+```
+
+### Example Response
+
+```json
+{
+  "shortUrl": "http://localhost:5000/abc123"
+}
+```
+
+Visit the short URL in a browser to get redirected.
+
+---
+
+## API Endpoints
+
+### `POST /shorten`
+
+**Description:** Shortens a long URL.
+
+**Request Body:**
+
+```json
+{
+  "longUrl": "https://www.example.com"
+}
+```
+
+**Response:**
+
+```json
+{
+  "shortUrl": "http://<BASE_URL>/<shortCode>"
+}
+```
+
+---
+
+### `GET /:shortCode`
+
+**Description:** Redirects to the original long URL.
+
+**Example:**
+
+```
+GET http://localhost:5000/abc123
+```
+
+**Response:** HTTP redirect to the original URL.
+
+---
+
+## Docker Setup
+
+### Build Docker Image
+
+```bash
+docker build -t url-shortener .
+```
+
+### Run Docker Container
+
+```bash
+docker run -p 5000:5000 \
+  -e BASE_URL=http://localhost:5000 \
+  url-shortener
+```
+
+> The application will be available at `http://localhost:5000`.
+
+---
+
+## Kubernetes Deployment
+
+> The application is designed to be deployed in a Kubernetes cluster with proper environment variable setup.
+
+### Key Notes:
+
+* The app uses a shared `database.json` file for persistence. Ensure a shared volume is mounted if using multiple replicas.
+* The `BASE_URL` must be set to the external IP or DNS of the service for short URLs to work correctly.
+
+### Steps:
+
+1. Build and push the Docker image to your container registry.
+2. Create a Kubernetes `deployment.yaml` and `service.yaml`.
+3. Ensure `BASE_URL` is set in the deployment environment variables.
+
+**Example environment section in `deployment.yaml`:**
+
+```yaml
+env:
+  - name: BASE_URL
+    value: "http://<external-ip-or-service-name>"
+```
+
+4. Apply the configs:
+
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
+
+5. Get external IP:
+
+```bash
+kubectl get service url-shortener
+```
+
+Use this external IP as the `BASE_URL` when testing your shortened links.
+
+---
+
+## Development
+
+### Make Changes
+
+1. Create a new branch:
+
+```bash
+git checkout -b feature-xyz
+```
+
+2. Make your changes, then commit:
+
+```bash
+git add .
+git commit -m "Add feature XYZ"
+```
+
+3. Push your branch:
+
+```bash
+git push origin feature-xyz
+```
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+---
+
+## MIT License
+
+```
 MIT License
 
 Copyright (c) 2025 Nimish Sahu
@@ -160,8 +244,3 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
----
-
-### Final Notes
-
-This **README.md** should help provide context to anyone using or contributing to the repository. It explains the project setup, usage, and how to interact with the API. Let me know if you'd like to tweak or add anything further!

@@ -2,12 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;  // Use the external IP if set
 
 // In-memory database
 const urlDatabase = {};
 
 app.use(bodyParser.json());
+
+// Redirect root to /shorten
+app.get('/', (req, res) => {
+  res.redirect('/shorten');
+});
 
 // Endpoint to shorten the URL
 app.post('/shorten', (req, res) => {
@@ -21,7 +27,8 @@ app.post('/shorten', (req, res) => {
   const shortCode = Math.random().toString(36).substring(2, 8);
   urlDatabase[shortCode] = longUrl;
 
-  const shortUrl = `http://localhost:${PORT}/${shortCode}`;
+  // Generate the short URL with the external IP (BASE_URL)
+  const shortUrl = `${BASE_URL}/${shortCode}`;
   res.json({ shortUrl });
 });
 
@@ -38,7 +45,7 @@ app.get('/:shortCode', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`URL Shortener running at http://localhost:${PORT}`);
+  console.log(`URL Shortener running at ${BASE_URL}`);
 });
 
 
