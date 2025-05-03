@@ -1,8 +1,3 @@
-Here's your updated `README.md` file, reflecting everything we've done so far, including Kubernetes deployment, handling persistence issues, and using environment variables for the base URL:
-
----
-
-````markdown
 # URL Shortener
 
 A simple Node.js-based URL shortener API that allows users to shorten long URLs and redirect to them using a short code. It uses Node.js, Express, and Docker for containerization. This project demonstrates building and deploying a basic API using Docker and Kubernetes, handling persistence, and managing configuration via environment variables.
